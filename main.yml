@@ -1,0 +1,4 @@
+---
+- hosts: osmc_rpi2
+  roles:
+    - osmc
