@@ -1,4 +1,4 @@
 [osmc_rpi2]
-osmc_fr
-osmc_den
-osmc_rp3
+osmc_fr     ansible_user=osmc   ansible_ssh_pass=osmc
+osmc_den    ansible_user=osmc   ansible_ssh_pass=osmc
+osmc_rp3    ansible_user=osmc   ansible_ssh_pass=osmc
