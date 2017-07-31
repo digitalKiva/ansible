@@ -20,6 +20,8 @@ sudo find / -type d \( -path /proc -o -path /dev -o -path /sys -o -path /run/ude
 
 TODO:
 
+- disable upnp and airplay
+
 - set mythtv user (to read/write to the mythic library mount); need to have same uid/gid as backend
 --
 
