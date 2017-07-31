@@ -1,19 +1,43 @@
 ---
-- name: test connection
-  action: shell echo 'hello world'
+- name: Fix sudoers
+  file: path=/etc/sudoers.d/osmc-no-secure-path state=absent
+  become: true
+  become_user: root
+  become_method: sudo
 
-# needs the reboot command below to not allow kodi to save in-ram setitng to disk
-- name: set guisettings.xml
-  replace:
-    path: /home/osmc/.kodi/userdata/guisettings.xml
-    regexp: '^(.*)<{{ item.tag }}.*>.*</{{ item.tag }}>$'
-    replace: '\1<{{ item.tag }}>{{ item.value }}</{{ item.tag }}>'
-    backup: yes
+- name: install apt-get dependencies
+  apt: name={{ item }} force=yes
   with_items:
-    - { tag: 'skin', value: 'skin.estuary' }
-    - { tag: 'settinglevel', value: '3' }
-    - { tag: 'seeksteps', value: '-60,-30,-10,10,30,60' }
+      - python-lxml
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: set skin to Estuary
+  xml:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    xpath: /settings/lookandfeel/skin
+    value: skin.estuary
   tags: test
+
+- name: remove the default attribute from skin setting
+  xml:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    xpath: /settings/lookandfeel/skin/@default
+    state: absent
+  tags: test
+
+- name: set video seeksteps
+  xml:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    xpath: /settings/videoplayer/seeksteps
+    value: -60,-30,-10,10,30,60
+
+- name: set settings level to expert
+  xml:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    xpath: /settings/general/settinglevel
+    value: 3
 
 - name: disable used main menu items
   replace:
@@ -30,6 +54,7 @@
       - HomeMenuNoVideosButton
       - HomeMenuNoProgramsButton
 
+# needs the reboot command to not allow kodi to overwrite with in-ram setitng
 - name: reboot osmc
   command: /sbin/reboot
   ignore_errors: yes
