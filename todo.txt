@@ -52,10 +52,6 @@ TODO:
 -- osmc@osmc_rp3:~$ cat /home/osmc/.kodi/userdata/addon_data/skin.estuary/settings.xml
 ---     <setting id="HomeMenuNoWeatherButton" type="bool">true</setting>
 
-- UI setting: settings level (expert)
--- cat /home/osmc/.kodi/userdata/guisettings.xml | grep settinglevel
---- <settinglevel>3</settinglevel>
-
 - UI setting: to allow files to be deleted
 --
 
@@ -135,4 +131,8 @@ DONE:
 -- ./.kodi/userdata/guisettings.xml:
 --- old: <skin default="true">skin.osmc</skin>
 --- new: <skin>skin.estuary</skin>
+
+- UI setting: settings level (expert)
+-- cat /home/osmc/.kodi/userdata/guisettings.xml | grep settinglevel
+--- <settinglevel>3</settinglevel>
 

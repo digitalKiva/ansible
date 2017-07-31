@@ -9,3 +9,9 @@
     regexp: '^(.*)<skin.*>.*</skin>$'
     replace: '\1<skin>skin.estuary</skin>'
     backup: yes
+
+- name: set setting level to Expert
+  replace:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    regexp: '^(.*)<settinglevel.*>.*</settinglevel>$'
+    replace: '\1<settinglevel>3</settinglevel>'
