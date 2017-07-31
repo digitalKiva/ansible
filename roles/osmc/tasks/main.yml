@@ -1,3 +1,11 @@
 ---
 - name: test connection
   action: shell echo 'hello world'
+
+# needs the reboot command below to not allow kodi to save in-ram setitng to disk
+- name: set skin to Estuary
+  replace:
+    path: /home/osmc/.kodi/userdata/guisettings.xml
+    regexp: '^(.*)<skin.*>.*</skin>$'
+    replace: '\1<skin>skin.estuary</skin>'
+    backup: yes

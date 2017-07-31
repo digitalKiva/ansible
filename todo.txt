@@ -19,11 +19,6 @@ useful for seeing which files changed
 sudo find / -type d \( -path /proc -o -path /dev -o -path /sys -o -path /run/udev -o -path /run/systemd \) -prune -o -mmin -2
 
 TODO:
-- UI setting: set the skin to Estuary
--- ./.kodi/userdata/guisettings.xml:
---- old: <skin default="true">skin.osmc</skin>
---- new: <skin>skin.estuary</skin>
-
 
 - set mythtv user (to read/write to the mythic library mount); need to have same uid/gid as backend
 --
@@ -132,4 +127,12 @@ osmc_rp3root@osmc:/home/osmc#
 
 root@osmc:/home/osmc# cat /etc/timezone
 America/Chicago
+
+
+
+DONE:
+- UI setting: set the skin to Estuary
+-- ./.kodi/userdata/guisettings.xml:
+--- old: <skin default="true">skin.osmc</skin>
+--- new: <skin>skin.estuary</skin>
 
