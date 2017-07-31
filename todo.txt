@@ -27,7 +27,11 @@ TODO:
 --
 
 - add mythtv group to osmc (maybe?); why do we need this? maybe to delete library files
---
+-- maybe we don't need this if we mount the files differently (server mount with specific ownership)
+--- http://www.troubleshooters.com/linux/nfs.htm
+--- anonuid and anongid
+--- maybe combine with all_squash but target the IP range to only the pis
+---- move the pis to their own subnet (192.168.2.248/29) (this gives us 2.248 - 255)
 
 - set the shared database to be on remote mysql server (use new table to try and start from scratch)
 --
