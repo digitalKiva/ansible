@@ -30,3 +30,7 @@
     path: /home/osmc/.kodi/userdata/guisettings.xml
     regexp: '^(.*)<settinglevel.*>.*</settinglevel>$'
     replace: '\1<settinglevel>3</settinglevel>'
+
+- name: reboot osmc
+  command: /sbin/reboot
+  ignore_errors: yes

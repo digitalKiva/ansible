@@ -121,6 +121,16 @@ root@osmc:/home/osmc# cat /etc/timezone
 America/Chicago
 
 
+Helpful items for reboot
+https://stackoverflow.com/questions/29955605/how-to-reboot-centos-7-with-ansible
+- name: Reboot the server for kernel update
+  shell: ( sleep 3 && /sbin/reboot & )
+  async: 0
+  poll: 0
+
+- name: Wait for the server to reboot
+  local_action: wait_for host="{{ansible_host}}" delay=15 state=started port="{{ansible_port}}" connect_timeout=10 timeout=180
+
 
 DONE:
 - UI setting: set the skin to Estuary
