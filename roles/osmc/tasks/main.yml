@@ -3,12 +3,17 @@
   action: shell echo 'hello world'
 
 # needs the reboot command below to not allow kodi to save in-ram setitng to disk
-- name: set skin to Estuary
+- name: set guisettings.xml
   replace:
     path: /home/osmc/.kodi/userdata/guisettings.xml
-    regexp: '^(.*)<skin.*>.*</skin>$'
-    replace: '\1<skin>skin.estuary</skin>'
+    regexp: '^(.*)<{{ item.tag }}.*>.*</{{ item.tag }}>$'
+    replace: '\1<{{ item.tag }}>{{ item.value }}</{{ item.tag }}>'
     backup: yes
+  with_items:
+    - { tag: 'skin', value: 'skin.estuary' }
+    - { tag: 'settinglevel', value: '3' }
+    - { tag: 'seeksteps', value: '-60,-30,-10,10,30,60' }
+  tags: test
 
 - name: disable used main menu items
   replace:
@@ -24,12 +29,6 @@
       - HomeMenuNoRadioButton
       - HomeMenuNoVideosButton
       - HomeMenuNoProgramsButton
-
-- name: set setting level to Expert
-  replace:
-    path: /home/osmc/.kodi/userdata/guisettings.xml
-    regexp: '^(.*)<settinglevel.*>.*</settinglevel>$'
-    replace: '\1<settinglevel>3</settinglevel>'
 
 - name: reboot osmc
   command: /sbin/reboot
