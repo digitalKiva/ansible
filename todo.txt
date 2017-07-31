@@ -48,10 +48,6 @@ TODO:
         </source>
     </video>
 
-- UI setting: remove weather from main menu
--- osmc@osmc_rp3:~$ cat /home/osmc/.kodi/userdata/addon_data/skin.estuary/settings.xml
----     <setting id="HomeMenuNoWeatherButton" type="bool">true</setting>
-
 - UI setting: to allow files to be deleted
 --
 
@@ -136,3 +132,6 @@ DONE:
 -- cat /home/osmc/.kodi/userdata/guisettings.xml | grep settinglevel
 --- <settinglevel>3</settinglevel>
 
+- UI setting: remove weather from main menu
+-- osmc@osmc_rp3:~$ cat /home/osmc/.kodi/userdata/addon_data/skin.estuary/settings.xml
+---     <setting id="HomeMenuNoWeatherButton" type="bool">true</setting>

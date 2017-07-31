@@ -10,6 +10,21 @@
     replace: '\1<skin>skin.estuary</skin>'
     backup: yes
 
+- name: disable used main menu items
+  replace:
+    path: /home/osmc/.kodi/userdata/addon_data/skin.estuary/settings.xml
+    regexp: '^(.*)<setting id="{{ item }}" type="bool">.*</setting>$'
+    replace: '\1<setting id="{{ item }}" type="bool">true</setting>'
+    backup: yes
+  with_items:
+      - HomeMenuNoWeatherButton
+      - HomeMenuNoMusicButton
+      - HomeMenuNoMusicVideoButton
+      - HomeMenuNoPicturesButton
+      - HomeMenuNoRadioButton
+      - HomeMenuNoVideosButton
+      - HomeMenuNoProgramsButton
+
 - name: set setting level to Expert
   replace:
     path: /home/osmc/.kodi/userdata/guisettings.xml
