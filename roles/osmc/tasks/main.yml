@@ -18,14 +18,12 @@
     path: /home/osmc/.kodi/userdata/guisettings.xml
     xpath: /settings/lookandfeel/skin
     value: skin.estuary
-  tags: test
 
 - name: remove the default attribute from skin setting
   xml:
     path: /home/osmc/.kodi/userdata/guisettings.xml
     xpath: /settings/lookandfeel/skin/@default
     state: absent
-  tags: test
 
 - name: set video seeksteps
   xml:
