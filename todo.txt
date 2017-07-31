@@ -30,7 +30,7 @@ TODO:
 --
 
 - set the shared database to be on remote mysql server (use new table to try and start from scratch)
--- 
+--
 
 - set video sources to the mount
 -- /home/osmc/.kodi/userdata/sources.xml
@@ -59,59 +59,6 @@ TODO:
 
 - set the mythtv pvr add-on settings
 --
-
-
-files changed during gui setup
-root@osmc:/home/osmc# find / -path /proc -prune -o -mmin -2
-/
-/dev/pts/0
-/dev/ptmx
-/tmp
-/proc
-/usr/share/kodi/addons/skin.estuary/xml
-/usr/share/kodi/addons/skin.estuary/xml/Font.xml
-/usr/share/kodi/addons/skin.estuary/fonts
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Semibold.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-Italic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Bold.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/LICENSE_2.txt
-/usr/share/kodi/addons/skin.estuary/fonts/Roboto-Light.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Regular.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-SemiboldItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-Bold.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-LightItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-Regular.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Italic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-BoldItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-LightItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/Roboto-Regular.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/LICENSE.txt
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-SemiboldItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Black.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-Light.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-ExtraLightItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-Light.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-ExtraBoldItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-ExtraLight.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OFL.txt
-/usr/share/kodi/addons/skin.estuary/fonts/SourceSansPro-BlackItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-BoldItalic.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/backup_Font.xml
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-Semibold.ttf
-/usr/share/kodi/addons/skin.estuary/fonts/OpenSans-ExtraBold.ttf
-/home/osmc/.kodi/temp/kodi.log
-/home/osmc/.kodi/userdata/guisettings.xml
-/home/osmc/.kodi/userdata/profiles.xml
-/home/osmc/.kodi/userdata/addon_data
-/home/osmc/.kodi/userdata/addon_data/skin.estuary
-/home/osmc/.kodi/userdata/addon_data/skin.estuary/settings.xml
-/home/osmc/.kodi/userdata/addon_data/skin.osmc/settings.xml
-/walkthrough_completed
-/run/log/journal/10b4428893af468fbcf31e51ff3033cc/system.journal
-/etc
-/etc/timezone
-/etc/localtime
-/etc/hostname
 
 
 root@osmc:/home/osmc# cat /etc/hostname
