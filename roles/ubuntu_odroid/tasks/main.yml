@@ -1,0 +1,279 @@
+---
+- name: Install needed packages
+  apt: name={{ item }}
+  update_cache: yes
+  cache_valid_time: 21600 # 6 hours
+  with_items:
+    - mdadm
+    - lvm2
+    - python
+    - python2.7
+    - libpython2.7
+    - python-setuptools
+    - python-imaging
+    - python-ldap
+    - python-urllib3
+    - ffmpeg
+    - python-pip
+    - python-mysqldb
+    - python-memcache
+    - python-requests
+    - mysql-server
+    - nginx
+    - ufw
+
+- name: upgrade pip to latest
+  pip: name=pip, state=latest
+
+- name: Install pip packages
+  pip: name={{ item }}, state=present
+  with_items:
+    - pillow
+    - moviepy
+
+
+# PACKAGE UPGRADES
+- name: upgrade to latest packages
+  apt:
+    name: "*"
+    state: latest
+  when:
+    - packageupgrade is defined and packageupgrade | bool
+
+- name: upgrade to latest dist-upgrade
+  apt:
+    upgrade: dist
+  when:
+    - packageupgrade is defined and packageupgrade | bool
+
+# only perform if you know what you are doing (should only be once)
+- name: install the linux-image-xu3
+  apt:
+    name: linux-image-xu3
+  when:
+    - kernelupgrade is defined and kernelupgrade | bool
+
+
+# SSH CONFIGURATION
+- name: Disallow ssh password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+    backup: yes
+  register: ssh_restart
+
+- name: Restart SSH
+  service:
+    name: ssh
+    state: restarted
+  when:
+    - ssh_restart|changed
+
+- name: allow ssh through firewall
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+
+# LOCALE CONFIGURATION
+- name: set the timezone
+  timezone:
+    name: America/Chicago
+
+- name: set the locale
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+
+# DISK FILE SYSTEM CONFIGURATION
+# TODO: at this time mdadm and lvm configuration is not configured here as its dangerous
+- name: mount the nas lvm partitions
+  mount:
+    state: present
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: "{{ item.fs }}"
+    passno: 2
+  with_items:
+    - { path: '/media/db_backup', src: '/dev/mapper/nas-db_backup', fs: 'ext4' }
+    - { path: '/media/seafile', src: '/dev/mapper/nas-seafile', fs: 'ext4' }
+
+
+# MYSQL CONFIGURATION
+- name: setup seafile mysql databases
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_pw }}"
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ccnet-db
+    - seafile-db
+    - seahub-db
+
+- name: setup mysql seafile user
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_pw }}"
+    name: seafile
+    password: "{{ mysql_seafile_pw }}"
+    priv: ccnet-db.*:ALL/seafile-db.*:ALL/seahub-db.*:ALL
+
+- name: create seafile user
+  user:
+    name: "{{ seafile_user }}"
+    password: "{{ seafile_user }}"
+    update_password: on_create
+
+
+# SEAFILE CONFIGURATION
+- name: create seafile directories
+  become: yes
+  become_user: "{{ seafile_user }}"
+  file:
+    path: "{{ seafile_dwload }}"
+    state: directory
+  with_items:
+    - "{{ seafile_dwload }}"
+    - "{{ seafile_installed }}"
+
+- name: download seafile
+  become: yes
+  become_user: "{{ seafile_user }}"
+  get_url:
+    url: "{{ seafile_url }}"
+    dest: "{{ seafile_dwload }}"
+  register: seafile-upgrade
+
+#TODO test for blank install, if so fail (for now), can type command for setup
+#TODO if upgrade, stop service, do minor upgrade, start service (like below), trigger handle
+#in handle we will symlink to installed directory to download
+
+- name: configure seafile data on nas
+  file:
+    src: "{{ seafile_dat_dir }}" 
+    dest: "{{ seafile_run_dir }}/seafile-data"
+    owner: "{{ seafile_user }}"
+    group: "{{ seafile_user }}"
+    state: link
+
+- name: HACK- symlink the old /backup dir to new /home seafile
+  file:
+    src: "{{ seafile_run_dir }}"
+    dest: /backup/seafile
+    owner: "{{ seafile_user }}"
+    group: "{{ seafile_user }}"
+    state: link
+
+- name: provision seafile systemd
+  template:
+    src: "{{ item }}.j2"
+    dest: "/{{ item }}"
+    mode: 0644
+  with_items:
+    - etc/systemd/system/seafile.service
+    - etc/systemd/system/seahub.service
+
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+
+# NGINX CONFIGURATION
+- name: disable the default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent 
+
+- name: copy seafile nginx configuration
+  template:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+  with_items:
+    - etc/nginx/sites-available/seafile.conf
+
+- name: enable seafile nginx site
+  file:
+    src: /etc/nginx/sites-available/seafile.conf
+    dest: /etc/nginx/sites-enabled/seafile.conf
+    state: link
+
+- name: create ssl private directory
+  file:
+    path: /etc/ssl/private
+    state: directory
+    mode: 0700
+
+# generated 4.15.18 with
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+# openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+# ansible vault encrypted via: ansible-vault encrypt <file>
+# see: http://docs.ansible.com/ansible/devel/user_guide/vault.html#encrypt-string-for-use-in-yaml
+- name: copy ssl secret sauce
+  copy:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0644
+  with_items:
+    - etc/ssl/certs/nginx-selfsigned.crt
+    - etc/ssl/private/nginx-selfsigned.key
+    - etc/ssl/certs/dhparam.pem
+  tags:
+    - t
+
+- name: enable nginx to start on boot
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: allow http/https through firewall
+  ufw:
+    rule: allow
+    name: "{{ item }}"
+  with_items:
+    - Nginx HTTP
+    - Nginx HTTPS
+
+- name: configure seafile seahub_settings.py for url
+  lineinfile:
+    dest: "{{ seafile_run_dir }}/conf/seahub_settings.py"
+    line: "FILE_SERVER_ROOT = 'https://{{ public_url }}/seafhttp'"
+    regexp: "^FILE_SERVER_ROOT"
+    state: present
+    
+- name: configure seafile ccnet.conf for url
+  lineinfile:
+    dest: "{{ seafile_run_dir }}/conf/ccnet.conf"
+    line: "SERVICE_URL = https://{{ public_url }}"
+    regexp: "^SERVICE_URL"
+    state: present
+
+- name: configure seafile seafile.conf for url
+  lineinfile:
+    dest: "{{ seafile_run_dir }}/conf/seafile.conf"
+    line: host = 127.0.0.1
+    insertafter: '^[fileserver]'
+    state: present
+
+
+# FINAL STEPS
+- name: enable the firewall
+  ufw:
+    state: enabled
+
+- name: enable and start seafile services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - seafile
+    - seahub
+
+- name: restart nginx service
+  systemd:
+    name: nginx
+    state: restarted

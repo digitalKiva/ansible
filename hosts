@@ -2,3 +2,6 @@
 osmc_fr     ansible_user=osmc   ansible_ssh_pass=osmc
 osmc_den    ansible_user=osmc   ansible_ssh_pass=osmc
 osmc_rp3    ansible_user=osmc   ansible_ssh_pass=osmc
+
+[nas]
+nas_root

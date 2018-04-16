@@ -2,3 +2,7 @@
 - hosts: osmc_rpi2
   roles:
     - osmc
+
+- hosts: nas_root
+  roles:
+    - ubuntu_odroid

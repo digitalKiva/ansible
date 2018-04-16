@@ -1,0 +1,13 @@
+[Unit]
+Description=Seafile
+After=network.target mysql.service
+
+[Service]
+Type=forking
+ExecStart={{ seafile_dir }}/seafile-server-latest/seafile.sh start
+ExecStop={{ seafile_dir }}/seafile-server-latest/seafile.sh stop
+User=seafile
+Group=seafile
+
+[Install]
+WantedBy=multi-user.target
