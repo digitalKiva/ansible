@@ -21,6 +21,7 @@
     - mysql-server
     - nginx
     - ufw
+    - smartmontools
 
 - name: upgrade pip to latest
   pip: name=pip, state=latest
@@ -367,6 +368,43 @@
     backup: yes
   tags:
     - email
+
+# CONFIGURE S.M.A.R.T Monitoring
+- name: enable smart for all drives
+  command: "smartctl --smart=on --offlineauto=on --saveauto=on {{ item }}"
+  with_items:
+    - /dev/sda
+    - /dev/sdb
+    - /dev/sdc
+  notify:
+    - smart restart
+  tags:
+    - smart
+
+- name: remove devicescan smart configuration
+  lineinfile:
+    dest: /etc/smartd.conf
+    regexp: ^DEVICESCAN
+    state: absent
+  notify:
+    - smart restart
+  tags:
+    - smart
+
+- name: setup smart email warnings
+  lineinfile:
+    dest: /etc/smartd.conf
+    line: "{{ item.device }} -a -W {{ item.temp }} -s S{{ item.shortscan }} -s L{{ item.longscan }} -m {{ email_address }} -M test"
+    state: present
+    backup: yes
+  with_items:
+    - {device: /dev/sda, temp: "5,45,55", shortscan: /../(08|15|22)/./2, longscan: /../01/./2 }
+    - {device: /dev/sdb, temp: "5,45,55", shortscan: /../(03|10|24)/./2, longscan: /../17/./2 }
+    - {device: /dev/sdc, temp: "5,40,55", shortscan: /../(05|19|26)/./2, longscan: /../12/./2 }
+  notify:
+    - smart restart
+  tags:
+    - smart
 
 # FINAL STEPS
 - name: enable the firewall

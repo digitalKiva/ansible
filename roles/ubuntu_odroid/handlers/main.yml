@@ -1,0 +1,6 @@
+---
+- name: smart restart
+  systemd:
+    name: smartmontools
+    enabled: yes
+    state: restarted
