@@ -22,6 +22,7 @@
     - nginx
     - ufw
     - smartmontools
+    - automysqlbackup
 
 - name: upgrade pip to latest
   pip: name=pip, state=latest
@@ -114,6 +115,8 @@
     - ccnet-db
     - seafile-db
     - seahub-db
+  tags:
+    - mysql
 
 - name: setup mysql seafile user
   mysql_user:
@@ -122,12 +125,31 @@
     name: seafile
     password: "{{ mysql_seafile_pw }}"
     priv: ccnet-db.*:ALL/seafile-db.*:ALL/seahub-db.*:ALL
+  tags:
+    - mysql
 
 - name: create seafile user
   user:
     name: "{{ seafile_user }}"
     password: "{{ seafile_user }}"
     update_password: on_create
+  tags:
+    - mysql
+
+- name: configure automysqlbackup
+  lineinfile:
+    dest: /etc/default/automysqlbackup
+    regexp: "{{ item.regex }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: yes
+  with_items:
+    - { regex: "^BACKUPDIR", line: "BACKUPDIR=/media/db_backup" }
+    - { regex: "^MAILCONTENT", line: "MAILCONTENT=log" }
+    - { regex: "^MAILADDR", line: "MAILADDR={{ email_address }}" }
+  tags:
+    - mysql
+    - mysqlbackup
 
 
 # SEAFILE CONFIGURATION
